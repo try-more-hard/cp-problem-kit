@@ -3,111 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CP Problem Modifier</title>
+    <title>CP Problem Hub - Modifier & Search</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Thêm một chút CSS bổ trợ cho khu vực Tìm kiếm để hợp với giao diện cũ của bạn */
-        .search-section {
-            background: var(--box-bg, #ffffff);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid #e0e0e0;
-        }
-        .search-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .search-group textarea {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            resize: vertical;
-            font-family: inherit;
-        }
-        .btn-search {
-            background-color: #0066cc;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .btn-search:hover {
-            background-color: #0052a3;
-        }
-        .search-results {
-            margin-top: 15px;
-        }
-        .match-item {
-            background: #f9f9f9;
-            padding: 15px;
-            border-left: 4px solid #0066cc;
-            margin-bottom: 10px;
-            border-radius: 0 4px 4px 0;
-        }
-        .match-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            font-size: 0.9em;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        .match-source {
-            color: #0066cc;
-            font-family: monospace;
-        }
-        .loading-text {
-            color: #0066cc;
-            font-style: italic;
-        }
-    </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>CP Problem Modifier</h1>
-        <p>Enhance or simplify competitive programming problems with AI.</p>
+<div class="app-container">
+    <header class="app-header">
+        <div class="header-content">
+            <h1>CP Problem Hub</h1>
+            <p>Enhance, simplify, and trace competitive programming problems with AI</p>
+        </div>
     </header>
 
-    <main>
-        <div class="search-section">
-            <h2 style="margin-top: 0; font-size: 1.2em;">🔍 Find Original Problem Source</h2>
-            <div class="search-group">
-                <textarea id="searchInput" placeholder="Paste problem statement or summary here to find the original source..."></textarea>
-                <button onclick="performSearch()" class="btn-search">Search Source</button>
+    <main class="app-main">
+        <section class="panel search-panel">
+            <div class="panel-header">
+                <span class="icon">🔍</span>
+                <h2>Find Original Source</h2>
             </div>
-            <div id="searchLoading" class="loading-text" style="display: none; margin-top: 10px;">⚙️ Hybrid AI is scanning database...</div>
-            <div id="searchResults" class="search-results"></div>
-        </div>
-        <div class="input-section">
-            <textarea
-                id="input"
-                placeholder="Paste a competitive programming problem here..."
-            ></textarea>
-
-            <div class="buttons">
-                <button id="buffBtn" class="btn-buff">Buff Problem</button>
-                <button id="nerfBtn" class="btn-nerf">Nerf Problem</button>
+            <div class="panel-body">
+                <p class="panel-desc">Paste problem description or logic to track the original problem in database.</p>
+                <div class="input-group">
+                    <textarea id="searchInput" placeholder="Enter problem statement here..."></textarea>
+                    <button onclick="performSearch()" class="btn btn-search">Search Source</button>
+                </div>
+                <div id="searchLoading" class="loading-status">⚙️ AI is scanning database...</div>
+                <div id="searchResults" class="results-list"></div>
             </div>
-        </div>
+        </section>
 
-        <div id="results-section" class="hidden">
-            <h2>Modified Problem</h2>
-            <div id="output" class="box"></div>
+        <section class="panel modifier-panel">
+            <div class="panel-header">
+                <span class="icon">⚡</span>
+                <h2>Problem Modifier</h2>
+            </div>
+            <div class="panel-body">
+                <p class="panel-desc">Paste a problem statement to augment its difficulty (Buff) or simplify its constraints (Nerf).</p>
+                <div class="input-section">
+                    <textarea id="input" placeholder="Paste a competitive programming problem here..."></textarea>
+                    <div class="buttons-row">
+                        <button id="buffBtn" class="btn btn-buff">🔥 Buff Problem</button>
+                        <button id="nerfBtn" class="btn btn-nerf">🛡️ Nerf Problem</button>
+                    </div>
+                </div>
 
-            <button id="spoilerBtn" class="btn-spoiler hidden">Show Solution</button>
-            <div id="solution" class="box hidden"></div>
+                <div id="results-section" class="hidden">
+                    <div class="result-block">
+                        <h3>Modified Problem</h3>
+                        <div id="output" class="box-content output-box"></div>
+                    </div>
 
-            <h2>Report</h2>
-            <pre id="report" class="box"></pre>
-        </div>
+                    <div class="solution-wrapper">
+                        <button id="spoilerBtn" class="btn btn-spoiler hidden">Show Solution</button>
+                        <div id="solution" class="box-content solution-box hidden"></div>
+                    </div>
+
+                    <div class="result-block">
+                        <h3>AI Analysis Report</h3>
+                        <pre id="report" class="box-content report-box"></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 </div>
 
@@ -122,38 +80,38 @@
             return;
         }
         
-        loading.style.display = 'block';
+        loading.classList.add('active');
         resultsDiv.innerHTML = '';
         
         try {
-            const response = await fetch('https://tryharderforioi100-cp-search-backend.hf.space/api/search', {
+            const response = await fetch('https://tên_space_của_bạn.hf.space/api/search', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: text, threshold: 0.5, limit: 3 })
             });
             
             const data = await response.json();
-            loading.style.display = 'none';
+            loading.classList.remove('active');
             
             if (data.success && data.results.length > 0) {
                 data.results.forEach((item, index) => {
                     resultsDiv.innerHTML += `
-                        <div class="match-item">
-                            <div class="match-header">
-                                <span>Top Match #${index + 1}</span>
-                                <span class="match-source">Source ID: ${item.source_id}</span>
+                        <div class="match-card">
+                            <div class="match-card-header">
+                                <span class="match-rank">Rank #${index + 1}</span>
+                                <span class="match-id">ID: ${item.source_id}</span>
                             </div>
-                            <div style="font-size: 0.9em; white-space: pre-wrap; color: #555;">${item.description}</div>
+                            <div class="match-card-body">${item.description}</div>
                         </div>
                     `;
                 });
             } else {
-                resultsDiv.innerHTML = '<p style="font-size: 0.9em; color: #777;">No matching problems found.</p>';
+                resultsDiv.innerHTML = '<div class="empty-state">No matching problems found.</div>';
             }
         } catch (error) {
-            loading.style.display = 'none';
+            loading.classList.remove('active');
             console.error(error);
-            resultsDiv.innerHTML = '<p style="font-size: 0.9em; color: red;">Failed to connect to API server.</p>';
+            resultsDiv.innerHTML = '<div class="error-state">Failed to connect to API server.</div>';
         }
     }
 </script>
